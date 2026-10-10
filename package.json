@@ -1,5 +1,5 @@
 {
-  "name": "tradly-boilerplate",
+  "name": "videohub",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,31 @@
       "esbuild"
     ]
   },
-  "description": "Tradly Master Boilerplate — foundation for building Tradly-powered marketplaces",
+  "description": "VideoHub — free Netflix-style video streaming portal, TV channel and podcast network template (React + Vite + Tradly)",
+  "keywords": [
+    "video-streaming",
+    "streaming-portal",
+    "video-on-demand",
+    "vod",
+    "ott",
+    "netflix-clone",
+    "netflix-template",
+    "tv-channel",
+    "podcast",
+    "podcast-template",
+    "rss-feed",
+    "podcast-player",
+    "movies",
+    "web-series",
+    "subscriptions",
+    "memberships",
+    "headless-commerce",
+    "react",
+    "vite",
+    "tailwindcss",
+    "tradly"
+  ],
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
