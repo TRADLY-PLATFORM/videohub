@@ -39,7 +39,7 @@ export default function SignUpPage() {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 justify-center">
             <ShoppingBag className="h-8 w-8 text-coffee-accent" />
-            <span className="font-display text-2xl font-bold text-foreground">Tradly</span>
+            <span className="font-display text-2xl font-bold text-foreground">VideoHub</span>
           </Link>
         </div>
 

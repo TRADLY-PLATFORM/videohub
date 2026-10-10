@@ -10,6 +10,7 @@ import { shippingMethodsApi } from './shipping-methods/api'
 import { paymentMethodsApi } from './payment-methods/api'
 import { commissionsApi } from './commissions/api'
 import { schedulesApi } from './schedules/api'
+import { membershipApi } from './membership/api'
 import { authSlice } from './auth/slice'
 import { appSlice } from './app/slice'
 
@@ -44,6 +45,7 @@ const rootReducer = combineReducers({
   [paymentMethodsApi.reducerPath]: paymentMethodsApi.reducer,
   [commissionsApi.reducerPath]: commissionsApi.reducer,
   [schedulesApi.reducerPath]: schedulesApi.reducer,
+  [membershipApi.reducerPath]: membershipApi.reducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>
@@ -63,7 +65,8 @@ export const store = configureStore({
       .concat(shippingMethodsApi.middleware)
       .concat(paymentMethodsApi.middleware)
       .concat(commissionsApi.middleware)
-      .concat(schedulesApi.middleware),
+      .concat(schedulesApi.middleware)
+      .concat(membershipApi.middleware),
 })
 
 export const persistor = persistStore(store)

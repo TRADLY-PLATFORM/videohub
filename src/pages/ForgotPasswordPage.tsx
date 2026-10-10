@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
 					>
 						<ShoppingBag className="h-8 w-8 text-coffee-accent" />
 						<span className="font-display text-2xl font-bold text-foreground">
-							Tradly
+							VideoHub
 						</span>
 					</Link>
 				</div>

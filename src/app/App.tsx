@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { PodcastPlayerProvider } from '@/src/components/podcast/PlayerContext'
 import { useRefreshAuthMutation } from '@/state/auth/api'
 import { useAuthSelector } from '@/state/auth/selectors'
 import SignInPage from '../pages/SignInPage'
@@ -8,7 +9,12 @@ import VerifyOtpPage from '../pages/VerifyOtpPage'
 import ForgotPasswordPage from '../pages/ForgotPasswordPage'
 import ResetPasswordPage from '../pages/ResetPasswordPage'
 import HomePage from '../pages/HomePage'
-import ListingDetailPage from '../pages/ListingDetailPage'
+import TitleDetailPage from '../pages/TitleDetailPage'
+import WatchPage from '../pages/WatchPage'
+import MyListPage from '../pages/MyListPage'
+import PlansPage from '../pages/PlansPage'
+import { PodcastsPage, PodcastShowPage } from '../pages/PodcastsPage'
+import EpisodePage, { RssFeedPage } from '../pages/EpisodePage'
 import CartPage from '../pages/CartPage'
 import CheckoutPage from '../pages/CheckoutPage'
 import ThankYouPage from '../pages/ThankYouPage'
@@ -25,10 +31,8 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const init = async () => {
-      // isAuthenticated is hydrated from cookies/localStorage before first render,
-      // so this correctly fires the refresh call on every page reload for logged-in users.
       if (isAuthenticated) {
-        await refreshAuth()
+        try { await refreshAuth() } catch { /* stay logged out silently */ }
       }
       setReady(true)
     }
@@ -36,8 +40,8 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
   }, [])
 
   if (!ready) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'sans-serif', color: '#888' }}>
-      Loading…
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#141414', color: '#e50914', fontWeight: 800, fontSize: 28 }}>
+      VIDEOHUB
     </div>
   )
   return <>{children}</>
@@ -49,10 +53,26 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function PodcastShowRoute() {
+  const { slug = "" } = useParams<{ slug: string }>()
+  return <PodcastShowPage slug={slug} />
+}
+
+function EpisodeRoute() {
+  const { slug = "" } = useParams<{ slug: string }>()
+  return <EpisodePage slug={slug} />
+}
+
+function RssRoute() {
+  const { slug = "" } = useParams<{ slug: string }>()
+  return <RssFeedPage showSlug={slug} />
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AppInitializer>
+        <PodcastPlayerProvider>
         <Routes>
           {/* Auth */}
           <Route path="/sign-in" element={<SignInPage />} />
@@ -61,9 +81,23 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-          {/* Public */}
+          {/* Netflix-style browse */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/listing/:slug" element={<ListingDetailPage />} />
+          <Route path="/movies" element={<HomePage kind="movie" />} />
+          <Route path="/series" element={<HomePage kind="series" />} />
+          <Route path="/my-list" element={<MyListPage />} />
+          <Route path="/plans" element={<PlansPage />} />
+          <Route path="/title/:slug" element={<TitleDetailPage />} />
+          <Route path="/watch/:slug" element={<WatchPage />} />
+
+          {/* Podcasts — list UX, persistent player, RSS distribution */}
+          <Route path="/podcasts" element={<PodcastsPage />} />
+          <Route path="/podcast/:slug" element={<PodcastShowRoute />} />
+          <Route path="/podcast/:slug/rss" element={<RssRoute />} />
+          <Route path="/episode/:slug" element={<EpisodeRoute />} />
+
+          {/* Legacy marketplace routes (kept for checkout) */}
+          <Route path="/listing/:slug" element={<TitleDetailPage />} />
           <Route path="/lc/:slug" element={<CategoryListingsPage />} />
 
           {/* Protected */}
@@ -77,6 +111,7 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </PodcastPlayerProvider>
       </AppInitializer>
     </BrowserRouter>
   )

@@ -1,233 +1,113 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
 import { useGetListingsQuery } from "@/state/listing/api";
-import { useGetCartQuery } from "@/state/cart/api";
-import { useAuthSelector } from "@/state/auth/selectors";
 import Layout from "../components/Layout";
-import { Button } from "@/src/components/ui/button";
-import { Badge } from "@/src/components/ui/badge";
-import { Skeleton } from "@/src/components/ui/skeleton";
-import { Search, ShoppingCart, Heart, ArrowRight, Check, Star, Users, Zap } from "lucide-react";
+import Billboard from "../components/netflix/Billboard";
+import { Row, ContinueCard } from "../components/netflix/rails";
+import { MOCK_TITLES, getMyListIds, getProgress } from "@/src/data/mockTitles";
 import type { Listing } from "@/types/listing.types";
+import { Skeleton } from "@/src/components/ui/skeleton";
 
-function ListingCard({ listing }: { listing: Listing }) {
-  const image = listing.images[0];
-
-  return (
-    <Link to={`/listing/${listing.slug}`} className="block group">
-      <div className="card-product">
-        {/* Image */}
-        <div className="aspect-square overflow-hidden bg-coffee-secondary/20 relative">
-          {image ? (
-            <img
-              src={image}
-              alt={listing.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-              No image
-            </div>
-          )}
-          {listing.offer_percent > 0 && (
-            <Badge className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs">
-              {listing.offer_percent}% off
-            </Badge>
-          )}
-          {listing.liked && (
-            <span className="absolute top-2 right-2 text-destructive">
-              <Heart className="h-4 w-4 fill-current" />
-            </span>
-          )}
-          {listing.in_cart && (
-            <div className="absolute bottom-2 right-2">
-              <Badge className="bg-green-600 text-white text-[10px]">In cart</Badge>
-            </div>
-          )}
-        </div>
-
-        {/* Info */}
-        <div className="p-4">
-          <p className="text-xs text-muted-foreground mb-1">{listing.account?.name}</p>
-          <h3 className="font-display text-sm font-semibold text-foreground mb-2 line-clamp-2 leading-snug">
-            {listing.title}
-          </h3>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-display text-base font-bold text-coffee-accent">
-                {listing.offer_price?.formatted}
-              </span>
-              {listing.offer_percent > 0 && (
-                <span className="text-xs text-muted-foreground line-through">
-                  {listing.list_price?.formatted}
-                </span>
-              )}
-            </div>
-            <Button size="sm" className="btn-hero h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-              <ShoppingCart className="h-3 w-3 mr-1" />
-              Add
-            </Button>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function ListingCardSkeleton() {
-  return (
-    <div className="rounded-xl overflow-hidden border border-border">
-      <Skeleton className="aspect-square w-full" />
-      <div className="p-4 space-y-2">
-        <Skeleton className="h-3 w-1/3" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-2/3" />
-        <Skeleton className="h-5 w-1/2" />
-      </div>
-    </div>
-  );
-}
-
-/** Clickable category tile — pass emoji + name + optional count */
-function CategoryCard({ emoji, name, count, href = "#" }: { emoji: string; name: string; count?: number; href?: string }) {
-  return (
-    <Link to={href} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border bg-card hover:bg-coffee-secondary/30 hover:border-coffee-accent/40 transition-all duration-200 text-center">
-      <span className="text-3xl">{emoji}</span>
-      <span className="text-sm font-medium text-foreground group-hover:text-coffee-accent transition-colors">{name}</span>
-      {count !== undefined && <span className="text-xs text-muted-foreground">{count.toLocaleString()}</span>}
-    </Link>
-  );
-}
-
-/** Trust / feature highlight badge — icon + title + one-line description */
-function TrustBadge({ icon: Icon, title, description }: { icon: React.ElementType; title: string; description: string }) {
-  return (
-    <div className="flex items-start gap-3 p-4">
-      <div className="shrink-0 w-9 h-9 rounded-lg bg-coffee-accent/10 flex items-center justify-center">
-        <Icon className="h-4 w-4 text-coffee-accent" />
-      </div>
-      <div>
-        <p className="text-sm font-semibold text-foreground">{title}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-/** Section header with optional CTA link */
-function SectionHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: { label: string; href: string } }) {
-  return (
-    <div className="flex items-end justify-between mb-6">
-      <div>
-        <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">{title}</h2>
-        {subtitle && <p className="text-muted-foreground text-sm mt-1">{subtitle}</p>}
-      </div>
-      {action && (
-        <Link to={action.href} className="text-sm font-medium text-coffee-accent hover:underline flex items-center gap-1 shrink-0">
-          {action.label} <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      )}
-    </div>
-  );
-}
-
-/** Stat / metric card — big number + label */
-function StatCard({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="text-center p-6">
-      <p className="font-display text-4xl font-bold text-coffee-accent">{value}</p>
-      <p className="text-sm text-muted-foreground mt-1">{label}</p>
-    </div>
-  );
-}
-
-export default function HomePage() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const isAuthenticated = useAuthSelector(s => s.isAuthenticated);
-
-  const { data, isLoading, isFetching, isError } = useGetListingsQuery({
-    page,
-    limit: 20,
+function useTitles(kind?: "movie" | "series", search = "") {
+  const { data, isLoading, isError } = useGetListingsQuery({
+    page: 1,
+    limit: 40,
+    type: "video_listing",
     ...(search ? { search_key: search } : {}),
   });
+  const live = useMemo(() => {
+    const ls = (data?.listings ?? []).filter((l) =>
+      search ? l.title.toLowerCase().includes(search.toLowerCase()) : true,
+    );
+    if (kind) {
+      // Tradly has no movie/series split — infer from mock `kind` when present,
+      // otherwise alternate live items between rows so rows never look empty.
+      const mocks = MOCK_TITLES.filter((m) => m.kind === kind).map((m) => m.slug);
+      if (mocks.length && ls.length === 0) return [];
+      return ls;
+    }
+    return ls;
+  }, [data, kind, search]);
 
-  // Prefetch cart so header count is populated
-  useGetCartQuery(undefined, { skip: !isAuthenticated });
+  const useMock = isError || (!isLoading && live.length === 0);
+  const mock = useMemo(() => {
+    let m = MOCK_TITLES;
+    if (kind) m = m.filter((t) => t.kind === kind);
+    if (search) m = m.filter((t) => t.title.toLowerCase().includes(search.toLowerCase()));
+    return m as Listing[];
+  }, [kind, search]);
 
-  const listings = data?.listings ?? [];
-  const totalRecords = data?.total_records ?? 0;
-  const totalPages = Math.ceil(totalRecords / 20);
+  return { listings: useMock ? mock : live, isLoading: isLoading && !useMock, isMock: useMock };
+}
+
+export default function HomePage({ kind }: { kind?: "movie" | "series" }) {
+  const [query, setQuery] = useState("");
+  const { listings, isLoading } = useTitles(kind, query);
+  const [myListTick, setMyListTick] = useState(0);
+
+  const myIds = getMyListIds();
+  void myListTick;
+  const myList = listings.filter((l) => myIds.includes(l.id) || l.liked);
+  const progress = getProgress();
+  const continueIds = Object.keys(progress);
+  const continueList = listings.filter((l) => continueIds.includes(l.slug)).slice(0, 10);
+
+  const trending = [...listings].sort((a, b) => b.likes - a.likes).slice(0, 10);
+  const top10 = [...listings].slice(0, 10);
+  const movies = (kind ? listings : MOCK_TITLES.filter((m) => m.kind === "movie")).slice(0, 12) as Listing[];
+  const series = (kind ? listings : MOCK_TITLES.filter((m) => m.kind === "series")).slice(0, 12) as Listing[];
+  const hero = trending[0] ?? listings[0];
 
   return (
-    <Layout className="py-8">
-      {/* Hero strip */}
-      <div className="gradient-warm rounded-2xl px-8 py-10 mb-10 text-center">
-        {/* @sky:design hero-copy — headline + subtitle. Freely rewrite copy/markup; keep the search block below untouched. */}
-        <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
-          Discover Amazing Products
-        </h1>
-        <p className="text-subtitle mb-6 max-w-xl mx-auto">
-          Browse our curated marketplace and find exactly what you're looking for.
-        </p>
-        {/* @sky:end */}
-        {/* @sky:logic search — DO NOT EDIT (bound to search/page state) */}
-        <div className="relative max-w-md mx-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="Search listings…"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          />
-        </div>
-        {/* @sky:end */}
-      </div>
-
-      {/* States */}
-      {isError && (
-        <p className="text-center text-destructive py-12 text-sm">Failed to load listings.</p>
+    <Layout search={query} onSearch={(v) => setQuery(v)} minimalPadding>
+      {isLoading || !hero ? (
+        <div className="h-[78vh] w-full animate-pulse bg-zinc-900" />
+      ) : (
+        <Billboard title={hero} />
       )}
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-        {isLoading
-          ? Array.from({ length: 10 }).map((_, i) => <ListingCardSkeleton key={i} />)
-          : listings.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
+      <div className="-mt-24 relative z-10 pb-16">
+        {isLoading ? (
+          <div className="flex gap-4 px-4 md:px-12">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-[240px] w-[160px] shrink-0 bg-zinc-800" />
             ))}
+          </div>
+        ) : (
+          <>
+            {continueList.length > 0 && (
+              <section className="mb-6 md:mb-8">
+                <h2 className="mb-2 px-4 text-[15px] font-semibold text-zinc-100 md:px-12 md:text-lg">
+                  Continue Watching
+                </h2>
+                <div className="scroll-row px-4 md:px-12">
+                  {continueList.map((l) => (
+                    <ContinueCard key={l.id} listing={l} progress={progress[l.slug] ?? 35} />
+                  ))}
+                </div>
+              </section>
+            )}
+            <div onClick={() => setMyListTick((t) => t + 1)}>
+              <Row title="Trending Now" listings={trending} />
+            </div>
+            <Row title="Top 10 in Your Country Today" listings={top10} numbered />
+            {myList.length > 0 && <Row title="My List" listings={myList} />}
+            {!kind && (
+              <>
+                <Row title="Blockbuster Movies" listings={movies} />
+                <Row title="Binge-Worthy Series" listings={series} />
+                <Row title="Because You Watched Neon Harbor" listings={[...listings].reverse().slice(0, 12)} />
+              </>
+            )}
+            {kind === "movie" && <Row title="Movies" listings={listings} />}
+            {kind === "series" && <Row title="Series" listings={listings} />}
+            {listings.length === 0 && (
+              <p className="px-12 py-20 text-center text-sm text-zinc-400">
+                No titles found{query ? ` for “${query}”` : ""}.
+              </p>
+            )}
+          </>
+        )}
       </div>
-
-      {!isLoading && listings.length === 0 && !isError && (
-        <div className="text-center py-20">
-          <p className="text-muted-foreground text-sm">No listings found.</p>
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-12">
-          <Button
-            variant="outline"
-            className="btn-secondary"
-            disabled={page <= 1 || isFetching}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            ← Prev
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            className="btn-secondary"
-            disabled={page >= totalPages || isFetching}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      )}
     </Layout>
   );
 }

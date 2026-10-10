@@ -1,157 +1,155 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ShoppingCart, User, LogOut, ShoppingBag, Menu, X } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Search, Bell, ChevronDown, User, LogOut } from 'lucide-react'
 import { useAuthSelector } from '@/state/auth/selectors'
-import { useCartItemCount } from '@/state/cart/selectors'
 import { logout } from '@/state/auth/slice'
 import { useDispatch } from 'react-redux'
 import type { AppDispatch } from '@/state/store'
-import { Button } from '@/src/components/ui/button'
 import { cn } from '@/src/lib/utils'
+import MiniPlayer from '@/src/components/podcast/MiniPlayer'
 
-function Header() {
+function Header({ search, onSearch }: { search?: string; onSearch?: (v: string) => void }) {
   const isAuthenticated = useAuthSelector(s => s.isAuthenticated)
   const firstName = useAuthSelector(s => s.firstName)
-  const cartCount = useCartItemCount()
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const loc = useLocation()
+  const [scrolled, setScrolled] = useState(false)
+  const [showSearch, setShowSearch] = useState(!!search || false)
 
-  const handleLogout = () => {
-    dispatch(logout())
-    navigate('/sign-in')
-  }
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 10)
+    window.addEventListener('scroll', fn)
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+
+  const link = (to: string, label: string) => (
+    <Link
+      key={to}
+      to={to}
+      className={cn(
+        'text-[13px] transition-colors',
+        loc.pathname === to ? 'font-semibold text-white' : 'text-zinc-300 hover:text-zinc-400',
+      )}
+    >
+      {label}
+    </Link>
+  )
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <ShoppingBag className="h-7 w-7 text-coffee-accent" />
-          <span className="font-display text-xl font-bold text-foreground">Tradly</span>
+    <header
+      className={cn(
+        'fixed inset-x-0 top-0 z-50 transition-colors',
+        scrolled ? 'bg-[#141414]' : 'bg-gradient-to-b from-black/80 to-transparent',
+      )}
+    >
+      <div className="flex items-center gap-8 px-4 py-3 md:px-12">
+        <Link to="/" className="text-xl font-black tracking-tight text-red-600 md:text-2xl">
+          VIDEOHUB
         </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-sm text-foreground hover:text-coffee-accent transition-colors">Home</Link>
-          {isAuthenticated && (
-            <Link to="/orders" className="text-sm text-foreground hover:text-coffee-accent transition-colors">My Orders</Link>
-          )}
+        <nav className="hidden items-center gap-5 lg:flex">
+          {link('/', 'Home')}
+          {link('/movies', 'Movies')}
+          {link('/series', 'TV Shows')}
+          {link('/my-list', 'My List')}
+          {link('/plans', 'Plans')}
+          {link('/podcasts', 'Podcasts')}
         </nav>
-
-        {/* Desktop actions */}
-        <div className="hidden md:flex items-center gap-3">
-          {isAuthenticated && (
-            <Link to="/cart">
-              <Button variant="outline" size="sm" className="btn-secondary relative">
-                <ShoppingCart className="h-4 w-4 mr-1.5" />
-                Cart
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-coffee-accent text-coffee-accent-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                    {cartCount > 9 ? '9+' : cartCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
-          )}
+        <div className="ml-auto flex items-center gap-4 text-white">
+          <div className="flex items-center">
+            {showSearch ? (
+              <input
+                autoFocus
+                value={search ?? ''}
+                onChange={(e) => onSearch?.(e.target.value)}
+                placeholder="Titles, genres..."
+                className="w-44 rounded border border-white/40 bg-black/80 px-2 py-1 text-sm outline-none md:w-56"
+              />
+            ) : (
+              <button onClick={() => setShowSearch(true)} aria-label="Search">
+                <Search className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+          <Bell className="hidden h-5 w-5 sm:block" />
           {isAuthenticated ? (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                <User className="h-3.5 w-3.5 inline mr-1" />
-                {firstName || 'Account'}
+            <div className="group relative flex items-center gap-1">
+              <span className="flex h-7 w-7 items-center justify-center rounded bg-red-600 text-xs font-bold">
+                {(firstName?.[0] ?? 'U').toUpperCase()}
               </span>
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-destructive gap-1.5">
-                <LogOut className="h-4 w-4" />
-              </Button>
+              <ChevronDown className="h-4 w-4" />
+              <div className="absolute right-0 top-8 hidden w-44 rounded bg-black/95 p-2 text-sm group-hover:block">
+                <button
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left hover:bg-white/10"
+                  onClick={() => navigate('/orders')}
+                >
+                  <User className="h-4 w-4" /> Purchases
+                </button>
+                <button
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left hover:bg-white/10"
+                  onClick={() => { dispatch(logout()); navigate('/'); }}
+                >
+                  <LogOut className="h-4 w-4" /> Sign out
+                </button>
+              </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <Link to="/sign-in">
-                <Button variant="ghost" size="sm" className="text-sm">Sign in</Button>
-              </Link>
-              <Link to="/sign-up">
-                <Button size="sm" className="btn-hero text-sm px-4">Sign up</Button>
+            <div className="flex items-center gap-3 text-sm">
+              <Link to="/sign-in" className="hidden sm:inline">Sign in</Link>
+              <Link to="/sign-up" className="rounded bg-red-600 px-3 py-1 font-semibold">
+                Join Now
               </Link>
             </div>
           )}
         </div>
-
-        {/* Mobile toggle */}
-        <button
-          className="md:hidden p-2 rounded-md text-foreground"
-          onClick={() => setMobileOpen(o => !o)}
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
       </div>
-
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-background px-4 py-4 flex flex-col gap-3">
-          <Link to="/" className="text-sm" onClick={() => setMobileOpen(false)}>Home</Link>
-          {isAuthenticated && (
-            <>
-              <Link to="/orders" className="text-sm" onClick={() => setMobileOpen(false)}>My Orders</Link>
-              <Link to="/cart" className="text-sm" onClick={() => setMobileOpen(false)}>Cart ({cartCount})</Link>
-              <button onClick={handleLogout} className="text-sm text-left text-destructive">Sign out</button>
-            </>
-          )}
-          {!isAuthenticated && (
-            <>
-              <Link to="/sign-in" className="text-sm" onClick={() => setMobileOpen(false)}>Sign in</Link>
-              <Link to="/sign-up" className="text-sm" onClick={() => setMobileOpen(false)}>Sign up</Link>
-            </>
-          )}
-        </div>
-      )}
+      {/* mobile nav */}
+      <nav className="flex items-center gap-5 overflow-x-auto px-4 pb-2 lg:hidden">
+        {link('/', 'Home')}
+        {link('/movies', 'Movies')}
+        {link('/series', 'TV Shows')}
+        {link('/my-list', 'My List')}
+          {link('/plans', 'Plans')}
+        {link('/podcasts', 'Podcasts')}
+      </nav>
     </header>
   )
 }
 
 function Footer() {
   return (
-    <footer className="bg-coffee-primary text-coffee-primary-foreground py-12 mt-auto">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <div className="flex items-center space-x-2 mb-3">
-              <ShoppingBag className="h-5 w-5" />
-              <span className="font-display text-lg font-bold">Tradly</span>
-            </div>
-            <p className="text-sm opacity-70 leading-relaxed">Your trusted marketplace for quality products.</p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider opacity-90">Quick Links</h4>
-            <ul className="space-y-2 text-sm opacity-70">
-              <li><Link to="/" className="hover:opacity-100 transition-opacity">Home</Link></li>
-              <li><Link to="/orders" className="hover:opacity-100 transition-opacity">My Orders</Link></li>
-              <li><Link to="/cart" className="hover:opacity-100 transition-opacity">Cart</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-3 text-sm uppercase tracking-wider opacity-90">Account</h4>
-            <ul className="space-y-2 text-sm opacity-70">
-              <li><Link to="/sign-in" className="hover:opacity-100 transition-opacity">Sign In</Link></li>
-              <li><Link to="/sign-up" className="hover:opacity-100 transition-opacity">Create Account</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="border-t border-coffee-primary-foreground/20 mt-8 pt-6 text-center text-sm opacity-50">
-          <p>&copy; {new Date().getFullYear()} Tradly. All rights reserved.</p>
-        </div>
+    <footer className="bg-[#141414] px-4 py-10 text-xs text-zinc-500 md:px-12">
+      <div className="mx-auto grid max-w-5xl grid-cols-2 gap-2 sm:grid-cols-4">
+        {['Audio Description', 'Help Center', 'Gift Cards', 'Media Center', 'Investor Relations', 'Jobs', 'Terms of Use', 'Privacy', 'Legal Notices', 'Cookie Preferences', 'Corporate Information', 'Contact Us'].map((x) => (
+          <span key={x} className="cursor-pointer hover:underline">{x}</span>
+        ))}
       </div>
+      <p className="mx-auto mt-6 max-w-5xl">© {new Date().getFullYear()} VideoHub — Movies & Series.</p>
     </footer>
   )
 }
 
-export default function Layout({ children, className }: { children: React.ReactNode; className?: string }) {
+export default function Layout({
+  children,
+  className,
+  search,
+  onSearch,
+  minimalPadding,
+}: {
+  children: React.ReactNode
+  className?: string
+  search?: string
+  onSearch?: (v: string) => void
+  minimalPadding?: boolean
+}) {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <main className={cn('flex-1 container mx-auto px-4 py-8', className)}>
+    <div className="min-h-screen bg-[#141414] flex flex-col text-white">
+      <Header search={search} onSearch={onSearch} />
+      <main className={cn('flex-1 pb-28', minimalPadding ? '' : 'px-4 md:px-12 pt-24', className)}>
         {children}
       </main>
       <Footer />
+      <MiniPlayer />
     </div>
   )
 }
