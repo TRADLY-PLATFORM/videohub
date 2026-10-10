@@ -5,6 +5,7 @@ import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { ShoppingBag } from 'lucide-react'
+import { isWorkspaceConfigured, WORKSPACE_ERROR } from '@/api/tradly-init'
 
 export default function SignUpPage() {
   const navigate = useNavigate()
@@ -19,6 +20,11 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    if (!isWorkspaceConfigured()) {
+      setError(WORKSPACE_ERROR)
+      return
+    }
 
     const input = { first_name: firstName, last_name: lastName, email, password, type: 'customer' as const }
     const result = await signUp(input)
@@ -46,6 +52,12 @@ export default function SignUpPage() {
         <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
           <h1 className="font-display text-2xl font-bold text-foreground mb-1">Create account</h1>
           <p className="text-sm text-muted-foreground mb-6">Join the marketplace</p>
+
+          {!isWorkspaceConfigured() && (
+            <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 rounded-lg px-4 py-3 text-sm mb-5">
+              Demo mode — accounts need a connected workspace. Add <code>VITE_TRADLY_DOMAIN</code> to <code>.env.local</code> and restart.
+            </div>
+          )}
 
           {error && (
             <div className="bg-destructive/10 border border-destructive/30 text-destructive rounded-lg px-4 py-3 text-sm mb-5">

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-
 import { PodcastPlayerProvider } from '@/src/components/podcast/PlayerContext'
 import { useRefreshAuthMutation } from '@/state/auth/api'
 import { useAuthSelector } from '@/state/auth/selectors'
+import { ensureTradlyInit } from '@/api/tradly-init'
 import SignInPage from '../pages/SignInPage'
 import SignUpPage from '../pages/SignUpPage'
 import VerifyOtpPage from '../pages/VerifyOtpPage'
@@ -31,6 +32,9 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const init = async () => {
+      // Initialize the Tradly SDK (tenant key resolution) before anything
+      // else; without this every auth/listing call fails.
+      await ensureTradlyInit()
       if (isAuthenticated) {
         try { await refreshAuth() } catch { /* stay logged out silently */ }
       }
