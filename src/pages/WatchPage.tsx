@@ -5,11 +5,16 @@ import { useGetListingDetailQuery } from "@/state/listing/api";
 import { MOCK_TITLES, setProgress, getMyListIds, toggleMyListId } from "@/src/data/mockTitles";
 import { backdropOf, posterOf } from "@/src/components/netflix/rails";
 import { useHasActiveSubscription } from "./PlansPage";
+import { isWorkspaceConfigured } from "@/api/tradly-init";
 
 export default function WatchPage() {
   const { slug = "" } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const hasSub = useHasActiveSubscription();
+  // Demo mode (no workspace): play the demo catalog directly so visitors see
+  // video immediately. With a real workspace, playback requires membership.
+  const demoMode = !isWorkspaceConfigured();
+  const locked = !hasSub && !demoMode;
   const { data } = useGetListingDetailQuery({ slug });
   const mock = MOCK_TITLES.find((m) => m.slug === slug);
   const listing = data?.listing ?? (mock as unknown as import("@/types/listing.types").Listing | undefined);
@@ -49,22 +54,7 @@ export default function WatchPage() {
         </Link>
       </div>
 
-      {hasSub ? (
-        videoUrl ? (
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            poster={backdropOf(listing)}
-            controls
-            autoPlay
-            onTimeUpdate={onTime}
-            onEnded={() => setProgress(slug, 100)}
-            className="aspect-video max-h-[82vh] w-full bg-black"
-          />
-        ) : (
-          <img src={backdropOf(listing)} alt={listing.title} className="aspect-video max-h-[82vh] w-full object-cover" />
-        )
-      ) : (
+      {locked ? (
         <div className="relative">
           <img src={backdropOf(listing)} alt={listing.title} className="aspect-video max-h-[82vh] w-full object-cover opacity-40" />
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 p-6 text-center">
@@ -78,6 +68,28 @@ export default function WatchPage() {
             </Link>
           </div>
         </div>
+      ) : (
+        <>
+          {demoMode && (
+            <p className="bg-yellow-500/10 px-4 py-1.5 text-center text-xs text-yellow-200 md:px-12">
+              Demo preview — connect a workspace + subscription to gate playback.
+            </p>
+          )}
+          {videoUrl ? (
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              poster={backdropOf(listing)}
+              controls
+              autoPlay
+              onTimeUpdate={onTime}
+              onEnded={() => setProgress(slug, 100)}
+              className="aspect-video max-h-[82vh] w-full bg-black"
+            />
+          ) : (
+            <img src={backdropOf(listing)} alt={listing.title} className="aspect-video max-h-[82vh] w-full object-cover" />
+          )}
+        </>
       )}
 
       <div className="mx-auto max-w-5xl px-4 py-8 md:px-8">
