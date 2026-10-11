@@ -33,6 +33,13 @@ A listing with no audio URL in `videos[0]` is not an episode and is skipped.
 > Write path: set `videos` via direct `PATCH /v1/listings/{id}` with body
 > `{ "listing": { "videos": [...] } }`. The MCP `update_listing` wrapper drops
 > this field — don't use it for media.
+>
+> Tradly-hosted bytes: `POST /v1/utils/S3signedUploadURL` with
+> `{ "files": [{ "name": "<file>", "type": "<mime>" }] }` returns `fileUri` +
+> S3 `signedUrl`; `PUT` the bytes to `signedUrl` (`Content-Type: <mime>`),
+> then PATCH the listing with the `fileUri`.
+> (Note: `/v1/utils/S3signedGetURL` with `{urls: [...]}` is the
+> signed-*download* shape — don't use it for uploads.)
 
 ## 3. Episode metadata
 
