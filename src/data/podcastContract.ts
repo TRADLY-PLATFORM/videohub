@@ -52,7 +52,10 @@ const toInt = (raw: string | undefined, fallback: number): number => {
 };
 
 export function isAudioListing(l: Listing): boolean {
-  if (!EPISODE_TYPES.has(l.order_type)) return false;
+  // This platform returns order_type "listings" for everything; the content
+  // type lives in `type`. Accept either field.
+  const kind = (l.order_type !== "listings" ? l.order_type : l.type) ?? l.type;
+  if (!EPISODE_TYPES.has(kind)) return false;
   const url = l.videos?.[0];
   return typeof url === "string" && AUDIO_RE.test(url);
 }

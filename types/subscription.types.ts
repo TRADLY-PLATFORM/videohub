@@ -78,7 +78,7 @@ export interface Plan {
 
 export const MOCK_PLANS: Plan[] = [
   {
-    listing_id: 9001,
+    listing_id: 729424,
     slug: "videohub-basic",
     name: "Basic",
     price: "$6.99/mo",
@@ -86,7 +86,7 @@ export const MOCK_PLANS: Plan[] = [
     features: ["HD streaming", "1 screen at a time", "Watch on phone & laptop", "Cancel anytime"],
   },
   {
-    listing_id: 9002,
+    listing_id: 729422,
     slug: "videohub-standard",
     name: "Standard",
     price: "$11.99/mo",
@@ -95,7 +95,7 @@ export const MOCK_PLANS: Plan[] = [
     highlight: true,
   },
   {
-    listing_id: 9003,
+    listing_id: 729423,
     slug: "videohub-premium",
     name: "Premium",
     price: "$15.99/mo",

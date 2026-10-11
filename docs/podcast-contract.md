@@ -11,6 +11,11 @@ listing system but with its own type map, so video assumptions never break.
 | Paid episode | `digital` | An MP3 is a digital good. Cart + checkout + order flow already work; composes with Memberships gating. |
 | Free episode | `information_listing` | No cart, content only. Fits free RSS-distributed episodes. |
 
+> Platform note: this workspace returns `order_type: "listings"` for every
+> listing — the content type lives in `type`. The mapper (`isAudioListing`)
+> therefore reads `type`, falling back to `order_type`. Never gate on
+> `order_type` alone.
+
 `events`, `appointments`, `donation`, `requests`, `membership` and
 `video_listing` are **not** podcast episodes and are ignored by the mapper.
 
@@ -24,6 +29,10 @@ The playable file is `listing.videos[0]` and MUST be audio:
 
 A listing with no audio URL in `videos[0]` is not an episode and is skipped.
 `listing.images[0]` is episode/show artwork fallback.
+
+> Write path: set `videos` via direct `PATCH /v1/listings/{id}` with body
+> `{ "listing": { "videos": [...] } }`. The MCP `update_listing` wrapper drops
+> this field — don't use it for media.
 
 ## 3. Episode metadata
 
