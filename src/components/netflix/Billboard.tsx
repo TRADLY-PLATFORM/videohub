@@ -40,7 +40,7 @@ export default function Billboard({ title }: { title: Listing }) {
 
       <div className="absolute bottom-[18%] left-4 max-w-xl md:left-12">
         <p className="mb-2 flex items-center gap-2 text-xs font-bold tracking-[0.3em] text-white/90">
-          <span className="font-black text-red-600 text-base tracking-normal">V</span> ORIGINAL
+          <span className="font-black text-green-500 text-base tracking-normal">V</span> ORIGINAL
         </p>
         <h1 className="text-4xl font-black uppercase leading-none text-white drop-shadow-xl md:text-7xl">
           {title.title}

@@ -25,7 +25,7 @@ export function PodcastsPage() {
   return (
     <Layout>
       <div className="mx-auto max-w-5xl py-8">
-        <p className="flex items-center gap-2 text-xs font-bold tracking-[0.3em] text-red-600">
+        <p className="flex items-center gap-2 text-xs font-bold tracking-[0.3em] text-green-500">
           <Mic className="h-4 w-4" /> VIDEOHUB PODCASTS
         </p>
         <h1 className="mt-2 text-3xl font-black text-white md:text-4xl">Shows & episodes</h1>
@@ -143,7 +143,7 @@ export function PodcastShowPage({ slug }: { slug: string }) {
         <div className="flex flex-col gap-6 md:flex-row">
           <img src={show.artwork} alt={show.title} className="h-52 w-52 shrink-0 rounded-2xl object-cover" />
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold tracking-[0.3em] text-red-600">PODCAST</p>
+            <p className="text-xs font-bold tracking-[0.3em] text-green-500">PODCAST</p>
             <h1 className="mt-1 text-3xl font-black text-white md:text-5xl">{show.title}</h1>
             <p className="mt-1 text-sm text-zinc-400">By {show.author} · {show.category} · {eps.length} episodes</p>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-300">{show.description}</p>
@@ -212,7 +212,7 @@ export function PodcastShowPage({ slug }: { slug: string }) {
                     + Queue
                   </button>
                 </div>
-                {pct > 0 && <div className="ml-[52px] mt-2 h-1 overflow-hidden rounded bg-zinc-800"><div className="h-full bg-red-600" style={{ width: `${pct}%` }} /></div>}
+                {pct > 0 && <div className="ml-[52px] mt-2 h-1 overflow-hidden rounded bg-zinc-800"><div className="h-full bg-green-500" style={{ width: `${pct}%` }} /></div>}
                 <p className="ml-[52px] mt-1 line-clamp-2 text-xs text-zinc-500">{e.description}</p>
               </div>
             );

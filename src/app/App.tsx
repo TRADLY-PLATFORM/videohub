@@ -44,7 +44,7 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
   }, [])
 
   if (!ready) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#141414', color: '#e50914', fontWeight: 800, fontSize: 28 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#141414', color: '#22c55e', fontWeight: 800, fontSize: 28 }}>
       VIDEOHUB
     </div>
   )

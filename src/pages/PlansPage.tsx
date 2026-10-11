@@ -62,7 +62,7 @@ export default function PlansPage() {
   return (
     <Layout>
       <div className="mx-auto max-w-5xl py-10">
-        <p className="text-center text-xs font-bold tracking-[0.3em] text-red-600">VIDEOHUB PLANS</p>
+        <p className="text-center text-xs font-bold tracking-[0.3em] text-green-500">VIDEOHUB PLANS</p>
         <h1 className="mt-2 text-center text-3xl font-black text-white md:text-5xl">
           One subscription. Unlimited movies & series.
         </h1>
@@ -78,10 +78,10 @@ export default function PlansPage() {
           {MOCK_PLANS.map((p) => (
             <div
               key={p.slug}
-              className={`rounded-xl border p-6 ${p.highlight ? "border-red-600 bg-zinc-900 shadow-2xl" : "border-zinc-800 bg-zinc-900/60"}`}
+              className={`rounded-xl border p-6 ${p.highlight ? "border-green-500 bg-zinc-900 shadow-2xl" : "border-zinc-800 bg-zinc-900/60"}`}
             >
               {p.highlight && (
-                <span className="mb-3 inline-flex items-center gap-1 rounded bg-red-600 px-2 py-0.5 text-xs font-bold text-white">
+                <span className="mb-3 inline-flex items-center gap-1 rounded bg-green-500 px-2 py-0.5 text-xs font-bold text-white">
                   <Crown className="h-3 w-3" /> MOST POPULAR
                 </span>
               )}
@@ -98,7 +98,7 @@ export default function PlansPage() {
               <button
                 disabled={isLoading}
                 onClick={() => subscribe(p.slug, p.listing_id)}
-                className={`mt-6 w-full rounded py-2.5 font-semibold ${p.highlight ? "bg-red-600 text-white hover:bg-red-700" : "bg-white text-black hover:bg-white/80"}`}
+                className={`mt-6 w-full rounded py-2.5 font-semibold ${p.highlight ? "bg-green-500 text-white hover:bg-green-600" : "bg-white text-black hover:bg-white/80"}`}
               >
                 {isLoading ? "Processing…" : hasSub ? "Switch plan" : "Subscribe"}
               </button>

@@ -34,7 +34,7 @@ export default function MiniPlayer() {
           seek(ratio * (duration || 0));
         }}
       >
-        <div className="h-full bg-red-600" style={{ width: `${pct}%` }} />
+        <div className="h-full bg-green-500" style={{ width: `${pct}%` }} />
       </div>
 
       <div className="flex items-center gap-3 px-3 py-2 md:px-6">
@@ -81,7 +81,7 @@ export default function MiniPlayer() {
                   <button
                     key={s}
                     onClick={() => { setSpeed(s); setShowSpeed(false); }}
-                    className={`block w-full rounded px-2 py-1.5 text-left text-xs ${s === speed ? "bg-red-600 text-white" : "text-zinc-300 hover:bg-white/10"}`}
+                    className={`block w-full rounded px-2 py-1.5 text-left text-xs ${s === speed ? "bg-green-500 text-white" : "text-zinc-300 hover:bg-white/10"}`}
                   >
                     {s}x speed
                   </button>

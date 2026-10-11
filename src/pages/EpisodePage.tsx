@@ -81,7 +81,7 @@ export default function EpisodePage({ slug }: { slug: string }) {
               seek(((e.clientX - r.left) / r.width) * len);
             }}
           >
-            <div className="h-full rounded bg-red-600" style={{ width: `${pct}%` }} />
+            <div className="h-full rounded bg-green-500" style={{ width: `${pct}%` }} />
           </div>
           <div className="mt-2 flex items-center justify-between text-xs text-zinc-400">
             <span>{formatClock(pos)}</span>
@@ -102,7 +102,7 @@ export default function EpisodePage({ slug }: { slug: string }) {
                 <button
                   key={s}
                   onClick={() => setSpeed(s)}
-                  className={`rounded-full px-2.5 py-1 text-xs font-bold ${isCurrent && speed === s ? "bg-red-600 text-white" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}
+                  className={`rounded-full px-2.5 py-1 text-xs font-bold ${isCurrent && speed === s ? "bg-green-500 text-white" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}
                 >
                   {s}x
                 </button>

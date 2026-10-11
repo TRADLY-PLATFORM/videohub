@@ -30,7 +30,7 @@ export default function WatchPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-black text-white">
         <p className="text-lg">Title not found.</p>
-        <button onClick={() => navigate("/")} className="rounded bg-red-600 px-6 py-2 font-semibold">
+        <button onClick={() => navigate("/")} className="rounded bg-green-500 px-6 py-2 font-semibold">
           Back to Browse
         </button>
       </div>
@@ -49,7 +49,7 @@ export default function WatchPage() {
         <button onClick={() => navigate(-1)} className="text-white/90 hover:text-white" aria-label="Back">
           <ArrowLeft className="h-7 w-7" />
         </button>
-        <Link to="/" className="text-2xl font-black tracking-tight text-red-600">
+        <Link to="/" className="text-2xl font-black tracking-tight text-green-500">
           VIDEOHUB
         </Link>
       </div>
@@ -63,7 +63,7 @@ export default function WatchPage() {
               Playback is gated by an active membership (Tradly Memberships API).
               Pick a plan to unlock all movies & series.
             </p>
-            <Link to="/plans" className="rounded bg-red-600 px-8 py-2.5 font-semibold text-white hover:bg-red-700">
+            <Link to="/plans" className="rounded bg-green-500 px-8 py-2.5 font-semibold text-white hover:bg-green-600">
               See Plans
             </Link>
           </div>

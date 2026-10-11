@@ -44,7 +44,7 @@ function Header({ search, onSearch }: { search?: string; onSearch?: (v: string) 
       )}
     >
       <div className="flex items-center gap-8 px-4 py-3 md:px-12">
-        <Link to="/" className="text-xl font-black tracking-tight text-red-600 md:text-2xl">
+        <Link to="/" className="text-xl font-black tracking-tight text-green-500 md:text-2xl">
           VIDEOHUB
         </Link>
         <nav className="hidden items-center gap-5 lg:flex">
@@ -74,7 +74,7 @@ function Header({ search, onSearch }: { search?: string; onSearch?: (v: string) 
           <Bell className="hidden h-5 w-5 sm:block" />
           {isAuthenticated ? (
             <div className="group relative flex items-center gap-1">
-              <span className="flex h-7 w-7 items-center justify-center rounded bg-red-600 text-xs font-bold">
+              <span className="flex h-7 w-7 items-center justify-center rounded bg-green-500 text-xs font-bold">
                 {(firstName?.[0] ?? 'U').toUpperCase()}
               </span>
               <ChevronDown className="h-4 w-4" />
@@ -96,7 +96,7 @@ function Header({ search, onSearch }: { search?: string; onSearch?: (v: string) 
           ) : (
             <div className="flex items-center gap-3 text-sm">
               <Link to="/sign-in" className="hidden sm:inline">Sign in</Link>
-              <Link to="/sign-up" className="rounded bg-red-600 px-3 py-1 font-semibold">
+              <Link to="/sign-up" className="rounded bg-green-500 px-3 py-1 font-semibold">
                 Join Now
               </Link>
             </div>

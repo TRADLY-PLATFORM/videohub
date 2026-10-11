@@ -115,7 +115,7 @@ export function ContinueCard({ listing, progress }: { listing: Listing; progress
           <Play className="h-5 w-5 fill-white text-white" />
         </span>
         <div className="absolute bottom-0 h-1 w-full bg-zinc-700">
-          <div className="h-full bg-red-600" style={{ width: `${Math.min(100, Math.max(2, progress))}%` }} />
+          <div className="h-full bg-green-500" style={{ width: `${Math.min(100, Math.max(2, progress))}%` }} />
         </div>
       </div>
       <p className="mt-1.5 text-[13px] text-zinc-300">{listing.title}</p>
