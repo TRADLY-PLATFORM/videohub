@@ -18,7 +18,18 @@ const poster = (seed: string) => img(seed, 400, 600);
 const backdrop = (seed: string) => img(seed, 1280, 720);
 
 const SAMPLE_VIDEO =
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+  "https://media.w3.org/2010/05/sintel/trailer.mp4";
+
+// Distinct playable sample files per title (CC-BY Blender / CC0 MDN).
+// Google's gtv-videos-bucket now 403s, so it is NOT used.
+export const DEMO_VIDEOS = [
+  "https://media.w3.org/2010/05/sintel/trailer.mp4",
+  "https://media.w3.org/2010/05/sintel/trailer_hd.mp4",
+  "https://media.w3.org/2010/05/bunny/trailer.mp4",
+  "https://media.w3.org/2010/05/bunny/movie.mp4",
+  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4",
+  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+];
 
 let id = 1000;
 function make(
@@ -51,7 +62,7 @@ function make(
     active: true,
     status: 2,
     images: [backdrop(seed), poster(seed)],
-    videos: [SAMPLE_VIDEO],
+    videos: [DEMO_VIDEOS[(id - 1001) % DEMO_VIDEOS.length] ?? SAMPLE_VIDEO],
     liked: false,
     unliked: false,
     likes: Math.floor(Math.random() * 9000) + 500,
