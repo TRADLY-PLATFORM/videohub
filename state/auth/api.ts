@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import * as authAPI from '@/api/auth'
 import { setCredentials, setVerifyId, updateTokens, logout } from './slice'
-import { parseSignUpResponse } from './signup-response'
+import { parseSignUpResponse, parseUserResponse } from './signup-response'
 import { cartApi } from '@/state/cart/api'
 import { listingApi } from '@/state/listing/api'
 import type {
@@ -51,9 +51,10 @@ export const authApi = createApi({
         const { currency, language } = getLocale(getState() as LocalState)
         try {
           const res = await authAPI.signIn(input, currency, language)
-          if (res?.error)
-            return { error: { status: 'CUSTOM_ERROR', error: res.error.message ?? 'Sign in failed' } }
-          const user = res.data!.user
+          const parsed = parseUserResponse(res, 'Sign in')
+          if ('error' in parsed)
+            return { error: { status: 'CUSTOM_ERROR', error: parsed.error } }
+          const user = parsed.user
           dispatch(setCredentials(user))
           // Invalidate guest cache — authKey changed, need fresh user-specific data
           dispatch(cartApi.util.invalidateTags(['Cart']))
@@ -95,9 +96,10 @@ export const authApi = createApi({
         const { currency, language } = getLocale(getState() as LocalState)
         try {
           const res = await authAPI.verifyOtp(input, currency, language)
-          if (res?.error)
-            return { error: { status: 'CUSTOM_ERROR', error: res.error.message ?? 'Verification failed' } }
-          const user = res.data!.user
+          const parsed = parseUserResponse(res, 'Verification')
+          if ('error' in parsed)
+            return { error: { status: 'CUSTOM_ERROR', error: parsed.error } }
+          const user = parsed.user
           dispatch(setCredentials(user))
           // Invalidate guest cache — authKey changed, need fresh user-specific data
           dispatch(cartApi.util.invalidateTags(['Cart']))
@@ -162,9 +164,10 @@ export const authApi = createApi({
         const { currency, language } = getLocale(getState() as LocalState)
         try {
           const res = await authAPI.socialSignIn(input, currency, language)
-          if (res?.error)
-            return { error: { status: 'CUSTOM_ERROR', error: res.error.message ?? 'Social sign in failed' } }
-          const user = res.data!.user
+          const parsed = parseUserResponse(res, 'Social sign in')
+          if ('error' in parsed)
+            return { error: { status: 'CUSTOM_ERROR', error: parsed.error } }
+          const user = parsed.user
           dispatch(setCredentials(user))
           // Invalidate guest cache — authKey changed, need fresh user-specific data
           dispatch(cartApi.util.invalidateTags(['Cart']))
